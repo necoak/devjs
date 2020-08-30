@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>仮想時刻計算</title>
+    <script src="js/jquery-3.5.1.min.js"></script>
+    <style>
+        .box1 {
+            padding: 0.5em 1em;
+        }
+        h1 {
+            background: #00b7ff;
+        }
+        h2 {
+            border-left: 15px solid #00b7ff;
+            padding: 4px;
+            background: #a7dcff;
+        }
+        h3 {
+            border-bottom: 1px solid #a7dcff;
+            border-left: 10px solid #a7dcff;
+            padding: 7px;
+        }
+        h4 {
+            border-bottom: 1px solid #00b7ff;
+        }
+    </style>
+    <script>
+        var real_dt; // 設定実時刻
+        var virt_dt; // 設定仮想時刻
+        var vr_jisa_dt; // 設定実時刻と仮想時刻の時差（実時刻-仮想時刻)
+
+        function getDateTimeText(date) {
+            return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate() +
+                "[" + ["日", "月", "火", "水", "木", "金", "土"][date.getDay()] + "] " +
+                date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        }
+
+        function clock() {
+            var now = new Date();
+            $("#now_text").text(getDateTimeText(now));
+
+            if (vr_jisa_dt) {
+                var vnow = new Date(now.getTime() - vr_jisa_dt.getTime());
+                $('#vnow_text').text(getDateTimeText(vnow));
+            }
+
+        }
+
+        window.onload = function () {
+            timerID = setInterval('clock()', 500); //0.5秒毎に現在時刻のupdate
+
+            $('#set_vr_datetime').on('click', function () {
+                var in_virt_datetime_text = $('#in_virt_datetime_text').val();
+                var in_real_datetime_text = $('#in_real_datetime_text').val();
+
+                var virt_dt = new Date(Date.parse(in_virt_datetime_text));
+                var real_dt = new Date(Date.parse(in_real_datetime_text));
+
+                $("#out_virt_datetime_text").text(getDateTimeText(virt_dt));
+                $("#out_real_datetime_text").text(getDateTimeText(real_dt));
+
+                // 仮想時刻と実時刻の時差計算
+                vr_jisa_dt = new Date(real_dt.getTime() - virt_dt.getTime());
+
+
+                var virt_date_tomorrow = new Date(virt_dt.getTime());
+                virt_date_tomorrow.setDate(virt_date_tomorrow.getDate() + 1);
+
+                // 仮想時刻24:00相当
+                var virt_date_2400 = new Date(virt_date_tomorrow.getFullYear(), virt_date_tomorrow.getMonth(), virt_date_tomorrow.getDate(), 0, 0, 0);
+                $("#out_virt_datetime_2400").text(getDateTimeText(virt_date_2400));
+                // 仮想時刻24:00相当の実時刻                
+                var real_datetime_at_v2400 = new Date(virt_date_2400.getTime() + vr_jisa_dt.getTime());
+                $('#out_real_datetime_at_v2400').text(getDateTimeText(real_datetime_at_v2400));
+
+                // 仮想時刻翌7:00相当(31:00相当)
+                var virt_datetime_3100 = new Date(virt_date_tomorrow.getFullYear(), virt_date_tomorrow.getMonth(), virt_date_tomorrow.getDate(), 7, 0, 0);
+                $('#out_virt_datetime_3100').text(getDateTimeText(virt_datetime_3100));
+                // 仮想時刻翌7:00相当の実時刻
+                var real_datetime_at_v3100 = new Date(virt_datetime_3100.getTime() + vr_jisa_dt.getTime());
+                $('#out_real_datetime_at_v3100').text(getDateTimeText(real_datetime_at_v3100));
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <h1>仮想時刻計算（時差計算）</h1>
+    <p>基準となる「実時刻」と「仮想時刻」を設定して、「将来の仮想時刻」の到来する「将来の実時刻」を計算します。</p>
+
+    <div class="box1">
+        <h2>Step1.基準となる「実時刻」と「仮想時刻」を入力</h2>
+        <label for="in_real_datetime_text">実時刻</label>
+        <input type="datetime-local" id="in_real_datetime_text" />
+        &nbsp;&nbsp;
+        <label for="in_virt_datetime_text">仮想時刻</label>
+        <input type="datetime-local" id="in_virt_datetime_text" />
+    </div>
+
+    <div class="box1">
+        <h2>Step2.将来時刻の計算を押下</h2>
+        <input type="button" id="set_vr_datetime" value="将来時刻の計算" />
+    </div>
+
+    <div class="box1">
+        <h2>Step3.将来時刻を確認</h2>
+
+        <h3>仮想時刻設定</h3>
+        <label>実時刻</label>&nbsp; &nbsp; : &nbsp; <span id="out_real_datetime_text">yyyy/mm/dd</span>
+        <br/>
+        <label>仮想時刻:</label>&nbsp; &nbsp; : &nbsp; <span id="out_virt_datetime_text">yyyy/mm/dd</span>
+
+        <h3>現在の時刻</h3>
+        <label>実時刻:</label>&nbsp; &nbsp; : &nbsp; <span id="now_text"></span>
+        <br/>
+        <label>仮想時刻:</label>&nbsp; &nbsp; : &nbsp; <span id="vnow_text"></span>
+
+        <h3>将来時刻計算結果</h3>
+        <h4>仮想時刻が24:00</h4>
+        <label>実時刻</label>&nbsp; &nbsp; : &nbsp; <span id="out_real_datetime_at_v2400"></span>
+        <br/>
+        <label>仮想時刻</label>&nbsp; &nbsp; : &nbsp; <span id="out_virt_datetime_2400"></span>
+
+        <h4>仮想時刻が翌日7:00(31:00)</h4>
+        <label>実時刻</label>&nbsp; &nbsp; : &nbsp; <span id="out_real_datetime_at_v3100"></span>
+        <br/>
+        <label>仮想時刻</label>&nbsp; &nbsp; : &nbsp; <span id="out_virt_datetime_3100"></span>
+    </div>
+</body>
+</html>
