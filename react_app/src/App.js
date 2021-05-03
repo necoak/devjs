@@ -1,24 +1,53 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import './App.css';
 import Rect from './Rect';
 
-class App extends Component {
 
-  render() {
-    return (
-      <div>
-        <h1 className="bg-primary text-white display-4">React</h1>
-        <div className="container">
-          <p className="subtitle">draw rectangle.</p>
-        </div>
-        <div>
-        <Rect x="100" y="200" w="200" h="200" c="#6ff9" r="25"/>
-        <Rect x="200" y="300" w="200" h="200" c="#f6f9" r="75"/>
-        <Rect x="300" y="400" w="200" h="200" c="#6669" r="100"/>
-        </div>
-      </div>
-    );
-  }
+function AleartMessage(props) {
+  const data = props.data;
+  const msg = JSON.stringify(data);
+
+  return (
+    <div className="alert alert-primary h5 text-primary">
+      <h5>{msg}</h5>
+      <hr/>
+      <table className="table h6">
+        <tbody>
+          <tr><th>Name</th><td>{data.name}</td></tr>
+          <tr><th>Mail</th><td>{data.mail}</td></tr>
+          <tr><th>Age</th><td>{data.age}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  );
 }
+
+function App() {
+  const [name, setName] = useState("HogeHogeo");
+  const [mail, setMail] = useState("hoge@hogehoge.com");
+  const [age, setAge] = useState("31");
+  const [form, setForm] = useState({
+    name:'no name', mail:'no mail', age: 0
+  });
+
+  const doChangeName = (event)=>{
+    setName(event.target.value);
+  }
+
+  const doChangeMail = (event)=>{
+    setMail(event.target.value);
+  }
+
+  const doChangeAge = (event)=>{
+    setAge(event.target.value);
+  }
+  const doSubmit = (event)=> {
+    setForm({name:name, mail:mail, age:age});
+    event.preventDefault();
+  }
+
+  return ();
+}
+
 
 export default App;
