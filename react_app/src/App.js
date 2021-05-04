@@ -1,52 +1,98 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
-import Rect from './Rect';
 
+function ShowRGB(props) {
 
-function AleartMessage(props) {
   const data = props.data;
-  const msg = JSON.stringify(data);
-
   return (
-    <div className="alert alert-primary h5 text-primary">
-      <h5>{msg}</h5>
-      <hr/>
+    <div>
       <table className="table h6">
         <tbody>
-          <tr><th>Name</th><td>{data.name}</td></tr>
-          <tr><th>Mail</th><td>{data.mail}</td></tr>
-          <tr><th>Age</th><td>{data.age}</td></tr>
+          <tr><th>Color</th><td>{data.color}</td></tr>
+          <tr><th>Red</th><td>{data.red}</td></tr>
+          <tr><th>Green</th><td>{data.green}</td></tr>
+          <tr><th>Blue</th><td>{data.blue}</td></tr>
         </tbody>
       </table>
     </div>
+  )
+}
+
+function ShowColor(props) {
+
+  const data = props.data;
+  
+  let style = {
+    backgroundColor: data.color,
+    widht: "100px",
+    height: "100px"
+  };
+
+  return (
+    <div style={style}>{data.color}</div>
   );
 }
 
+function hex(red, green, blue) {
+  let rString = ("00" + Number(red).toString(16)).slice(-2);
+  let gString = ("00" + Number(green).toString(16)).slice(-2);
+  let bString = ("00" + Number(blue).toString(16)).slice(-2);
+  return "#"+rString+gString+bString;
+}
+
 function App() {
-  const [name, setName] = useState("HogeHogeo");
-  const [mail, setMail] = useState("hoge@hogehoge.com");
-  const [age, setAge] = useState("31");
+  const [red, setRed] = useState("0");
+  const [green, setGreen] = useState("0");
+  const [blue, setBlue] = useState("0");
   const [form, setForm] = useState({
-    name:'no name', mail:'no mail', age: 0
-  });
+    red: 0, green: 0, blue: 0, color: "#000000"});
 
-  const doChangeName = (event)=>{
-    setName(event.target.value);
+  const doChangeRed = (event)=>{
+    setRed(event.target.value);
   }
 
-  const doChangeMail = (event)=>{
-    setMail(event.target.value);
+  const doChangeGreen = (event)=>{
+    setGreen(event.target.value);
   }
 
-  const doChangeAge = (event)=>{
-    setAge(event.target.value);
+  const doChangeBlue = (event)=>{
+    setBlue(event.target.value);
   }
+
   const doSubmit = (event)=> {
-    setForm({name:name, mail:mail, age:age});
+    setForm({red:red, green:green, blue:blue, color:hex(red,green,blue)});
     event.preventDefault();
   }
 
-  return ();
+  return (
+    <div>
+    <h1 className="bg-primary text-white display-4 ">React</h1>
+    <div className="container">
+      <h4 className="my-3">Hooks sample(ColorPanel)</h4>
+      <ShowRGB data={form}/>
+      <ShowColor data={form}/>
+      <form onSubmit={doSubmit}>
+        <div className="form-group">
+          <label>Red:</label>
+          <input type="number" className="form-control" 
+              onChange={doChangeRed} />
+        </div>
+        <div className="form-group">
+          <label>Green</label>
+          <input type="number" className="form-control" 
+              onChange={doChangeGreen} />
+        </div>
+        <div className="form-group">
+          <label>Blue:</label>
+          <input type="number" className="form-control" 
+              onChange={doChangeBlue} />
+        </div>
+        <input type="submit" className="btn btn-primary" 
+            value="Click" />
+        </form>
+    </div>
+  </div>
+  );
 }
 
 
